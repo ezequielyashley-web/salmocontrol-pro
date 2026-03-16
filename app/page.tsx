@@ -52,9 +52,9 @@ export default function Home() {
         {/* Dashboard */}
         {screen === 2 && (
           <div>
-            <h2 className="text-2xl font-bold mb-6">Dashboard</h2>
+            <h2 className="text-2xl font-bold mb-6 text-gray-900">Dashboard</h2>
             <div className="bg-yellow-100 border-2 border-yellow-400 rounded-lg p-4 mb-6">
-              <p className="text-yellow-800 text-sm">
+              <p className="text-yellow-800 text-sm font-semibold">
                 ⚠️ MODO DEMO - Sin Base de Datos
               </p>
             </div>
@@ -66,7 +66,10 @@ export default function Home() {
                 <div className="text-4xl mb-2">➕</div>
                 <div className="font-bold">Nuevo Proceso</div>
               </button>
-              <button className="p-6 bg-gray-500 text-white rounded-lg">
+              <button 
+                onClick={() => setScreen(11)}
+                className="p-6 bg-green-500 text-white rounded-lg hover:bg-green-600"
+              >
                 <div className="text-4xl mb-2">📋</div>
                 <div className="font-bold">Ver Procesos</div>
               </button>
@@ -77,20 +80,20 @@ export default function Home() {
         {/* Datos Básicos */}
         {screen === 3 && (
           <div>
-            <h2 className="text-xl font-bold mb-4">Datos Básicos</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-900">Datos Básicos</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Nº Palet</label>
+                <label className="block text-sm font-medium mb-2 text-gray-700">Nº Palet</label>
                 <input
                   type="text"
                   defaultValue="PAL-2024-0013"
-                  className="w-full p-3 border-2 border-gray-300 rounded-lg"
+                  className="w-full p-3 border-2 border-gray-300 rounded-lg text-gray-900"
                   readOnly
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">Tipo de Producto</label>
-                <select className="w-full p-3 border-2 border-gray-300 rounded-lg">
+                <label className="block text-sm font-medium mb-2 text-gray-700">Tipo de Producto</label>
+                <select className="w-full p-3 border-2 border-gray-300 rounded-lg text-gray-900">
                   <option>Salmón Ahumado</option>
                   <option>Trucha Ahumada</option>
                   <option>Bacalao Ahumado</option>
@@ -98,15 +101,15 @@ export default function Home() {
               </div>
               <button
                 onClick={() => setScreen(4)}
-                className="w-full p-4 bg-blue-500 text-white rounded-lg font-bold"
+                className="w-full p-4 bg-blue-500 text-white rounded-lg font-bold hover:bg-blue-600"
               >
                 Continuar →
               </button>
               <button
-                onClick={() => setScreen(1)}
-                className="w-full p-4 bg-gray-400 text-white rounded-lg font-bold"
+                onClick={() => setScreen(2)}
+                className="w-full p-4 bg-gray-500 text-white rounded-lg font-bold hover:bg-gray-600"
               >
-                ← Volver al Login
+                ← Volver al Dashboard
               </button>
             </div>
           </div>
@@ -116,21 +119,21 @@ export default function Home() {
         {screen === 4 && (
           <div className="text-center">
             <div className="text-6xl mb-4">✅</div>
-            <h2 className="text-2xl font-bold mb-4">¡Funciona Perfectamente!</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-2xl font-bold mb-4 text-gray-900">¡Funciona Perfectamente!</h2>
+            <p className="text-gray-800 mb-6">
               Tu app está lista para usar en el móvil
             </p>
             <div className="bg-green-100 border-2 border-green-500 rounded-lg p-4 mb-6 text-left">
-              <p className="text-green-800 text-sm font-bold mb-2">
+              <p className="text-green-900 text-sm font-bold mb-2">
                 ✓ Login con PIN funcionando
               </p>
-              <p className="text-green-800 text-sm font-bold mb-2">
+              <p className="text-green-900 text-sm font-bold mb-2">
                 ✓ Navegación entre pantallas
               </p>
-              <p className="text-green-800 text-sm font-bold mb-2">
+              <p className="text-green-900 text-sm font-bold mb-2">
                 ✓ Formularios responsive
               </p>
-              <p className="text-green-800 text-sm font-bold">
+              <p className="text-green-900 text-sm font-bold">
                 ✓ Listo para deployment
               </p>
             </div>
@@ -139,9 +142,23 @@ export default function Home() {
                 setScreen(1);
                 setPin('');
               }}
-              className="w-full p-4 bg-blue-500 text-white rounded-lg font-bold"
+              className="w-full p-4 bg-blue-500 text-white rounded-lg font-bold hover:bg-blue-600"
             >
               🔄 Volver al Inicio
+            </button>
+          </div>
+        )}
+
+        {/* Ver Procesos */}
+        {screen === 11 && (
+          <div>
+            <h2 className="text-xl font-bold mb-4 text-gray-900">Lista de Procesos</h2>
+            <p className="text-gray-700 mb-6">No hay procesos registrados aún.</p>
+            <button
+              onClick={() => setScreen(2)}
+              className="w-full p-4 bg-gray-500 text-white rounded-lg font-bold hover:bg-gray-600"
+              >
+              ← Volver al Dashboard
             </button>
           </div>
         )}
