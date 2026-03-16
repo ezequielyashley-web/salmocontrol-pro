@@ -13,8 +13,8 @@ export default function Home() {
         {screen === 1 && (
           <div className="text-center">
             <div className="text-6xl mb-4">🐟</div>
-            <h1 className="text-2xl font-bold mb-4">SALMOCONTROL</h1>
-            <p className="text-gray-600 mb-6">Ingrese su PIN</p>
+            <h1 className="text-2xl font-bold mb-4 text-gray-900">SALMOCONTROL</h1>
+            <p className="text-gray-800 mb-6">Ingrese su PIN</p>
             <div className="flex justify-center gap-2 mb-6">
               {[0, 1, 2, 3].map((i) => (
                 <div
