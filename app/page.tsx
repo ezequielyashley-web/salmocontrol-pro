@@ -250,6 +250,26 @@ export default function Home() {
     }));
   };
 
+  const cambiarPIN = () => {
+    const nuevoPIN = prompt('Ingresa el nuevo PIN (6 dígitos):');
+    if (nuevoPIN && nuevoPIN.length === 6 && /^\d+$/.test(nuevoPIN)) {
+      localStorage.setItem('salmocontrol_pin_usuario', nuevoPIN);
+      alert('✓ PIN actualizado correctamente');
+      setPin('');
+      setScreen(1);
+    } else {
+      alert('El PIN debe tener exactamente 6 dígitos numéricos');
+    }
+  };
+
+  const verificarPIN = (pinIngresado: string): boolean => {
+    const pinGuardado = localStorage.getItem('salmocontrol_pin_usuario');
+    if (pinGuardado) {
+      return pinIngresado === pinGuardado;
+    }
+    return pinIngresado === '123456'; // PIN por defecto
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
@@ -280,7 +300,7 @@ export default function Home() {
                     } else if (num !== '' && pin.length < 6) {
                       const newPin = pin + num;
                       setPin(newPin);
-                      if (newPin === '123456') {
+                      if (verificarPIN(newPin)) {
                         setTimeout(() => setScreen(2), 500);
                       }
                     }
@@ -291,6 +311,12 @@ export default function Home() {
                 </button>
               ))}
             </div>
+            <button
+              onClick={cambiarPIN}
+              className="mt-6 text-sm text-blue-600 hover:text-blue-800 underline"
+            >
+              ¿Olvidaste tu PIN? Cambiarlo aquí
+            </button>
           </div>
         )}
 
@@ -455,7 +481,7 @@ export default function Home() {
               >
                 <div className="text-4xl mb-2">🐟</div>
                 <div className="font-bold text-lg">Por Lomos</div>
-                <p className="text-sm mt-2 opacity-90">Pesar cada lomo individualmente</p>
+                <p className="text-sm mt-2 opacity-90">Pesos automáticos 1.5-1.7 kg/lomo</p>
               </button>
             </div>
 
@@ -477,7 +503,7 @@ export default function Home() {
             
             <div className="mb-6">
               <label className="block text-sm font-medium mb-2 text-gray-700">
-                ¿Cuántas {modo === 'cajas' ? 'cajas' : 'lomos'} vas a procesar?
+                ¿Cuántos {modo === 'cajas' ? 'cajas' : 'lomos'} vas a procesar?
               </label>
               <input
                 type="number"
@@ -499,13 +525,33 @@ export default function Home() {
                   ))}
                 </div>
               )}
+              {modo === 'lomos' && cantidad > 0 && (
+                <div className="mt-4 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-900">
+                    💡 Los pesos se generarán automáticamente entre 1.5 - 1.7 kg por lomo
+                  </p>
+                  <p className="text-sm text-blue-900 mt-2">
+                    <strong>Peso total estimado:</strong> {(cantidad * 1.6).toFixed(2)} kg
+                  </p>
+                </div>
+              )}
             </div>
 
             <button
               onClick={() => {
                 if (cantidad > 0) {
-                  setPesos(new Array(cantidad).fill(0));
-                  setScreen(7);
+                  if (modo === 'lomos') {
+                    // Generar pesos automáticos entre 1.5 y 1.7 kg
+                    const pesosGenerados = Array.from({ length: cantidad }, () => {
+                      return parseFloat((Math.random() * 0.2 + 1.5).toFixed(3));
+                    });
+                    setPesos(pesosGenerados);
+                    setItemActual(cantidad);
+                    setScreen(7);
+                  } else {
+                    setPesos(new Array(cantidad).fill(0));
+                    setScreen(7);
+                  }
                 } else {
                   alert('Por favor ingresa una cantidad válida');
                 }
@@ -546,10 +592,10 @@ export default function Home() {
               )}
             </div>
 
-            {itemActual < cantidad ? (
+            {modo === 'cajas' && itemActual < cantidad ? (
               <div className="mb-6">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">
-                  {modo === 'cajas' ? 'Caja' : 'Lomo'} {itemActual + 1}
+                  Caja {itemActual + 1}
                 </h3>
                 <input
                   type="number"
@@ -629,10 +675,11 @@ export default function Home() {
           </div>
         )}
 
-        {/* PANTALLA 8: Temperatura T1 */}
+        {/* PANTALLA 8: Temperatura T1 - Día 1 */}
         {screen === 8 && (
           <div>
             <h2 className="text-xl font-bold mb-4 text-gray-900">Control de Temperatura - Día 1</h2>
+            <p className="text-sm text-gray-700 mb-4">Proceso de {tipoProducto} - 3 días en total</p>
             
             <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-6">
               <p className="text-sm text-blue-900">
@@ -651,7 +698,7 @@ export default function Home() {
             
             <div className="mb-6">
               <label className="block text-sm font-medium mb-2 text-gray-700">
-                T1 - Temperatura al salar
+                T1 - Temperatura después de salar (para reposar 24h)
               </label>
               <div className="relative">
                 <input
@@ -669,8 +716,17 @@ export default function Home() {
             </div>
 
             <div className="bg-yellow-100 border-2 border-yellow-400 rounded-lg p-4 mb-6">
+              <p className="text-yellow-900 text-sm font-bold mb-2">
+                📅 Cronograma de 3 días:
+              </p>
               <p className="text-yellow-900 text-sm">
-                💡 Ahora el salmón irá a ahumar. Guarda este proceso y continúa mañana para registrar la T2 y el peso después del ahumado.
+                <strong>Día 1 (HOY):</strong> Salar → T1 → Reposar 24h
+              </p>
+              <p className="text-yellow-900 text-sm">
+                <strong>Día 2 (MAÑANA):</strong> T2 → Ahumar 24h
+              </p>
+              <p className="text-yellow-900 text-sm">
+                <strong>Día 3:</strong> Pesar → Completar
               </p>
             </div>
 
@@ -678,7 +734,7 @@ export default function Home() {
               onClick={() => {
                 if (temp1) {
                   guardarProcesoEnProgreso();
-                  alert('✓ Proceso guardado. Continúa mañana después del ahumado.');
+                  alert('✓ Proceso guardado. Continúa mañana (Día 2) para registrar T2 antes del ahumado.');
                   reiniciarProceso();
                 } else {
                   alert('Por favor ingresa la temperatura T1');
@@ -686,7 +742,7 @@ export default function Home() {
               }}
               className="w-full p-4 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600"
             >
-              💾 Guardar y Continuar Mañana
+              💾 Guardar - Continuar Día 2
             </button>
             <button
               onClick={() => setScreen(7)}
@@ -697,10 +753,11 @@ export default function Home() {
           </div>
         )}
 
-        {/* PANTALLA 9: Continuar Proceso - Peso Neto */}
+        {/* PANTALLA 9: Temperatura T2 (Día 2) */}
         {screen === 9 && procesoActual && (
           <div>
-            <h2 className="text-xl font-bold mb-4 text-gray-900">Peso Neto - Día 2</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-900">Control de Temperatura - Día 2</h2>
+            <p className="text-sm text-gray-700 mb-4">Antes de meter al horno del ahumado</p>
             
             <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-6">
               <p className="text-sm text-blue-900">
@@ -782,20 +839,21 @@ export default function Home() {
           </div>
         )}
 
-        {/* PANTALLA 10: Temperatura T2 */}
+        {/* PANTALLA 10: Temperatura T2 (Día 2) */}
         {screen === 10 && procesoActual && (
           <div>
             <h2 className="text-xl font-bold mb-4 text-gray-900">Control de Temperatura - Día 2</h2>
+            <p className="text-sm text-gray-700 mb-4">Antes de meter al horno del ahumado</p>
             
             <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-6">
               <p className="text-sm text-blue-900">
-                <strong>T1 (ayer):</strong> {procesoActual.temp1}°C
+                <strong>T1 (Día 1 después de salar):</strong> {procesoActual.temp1}°C
               </p>
             </div>
             
             <div className="mb-6">
               <label className="block text-sm font-medium mb-2 text-gray-700">
-                T2 - Temperatura al día siguiente (opcional)
+                T2 - Temperatura antes de ahumar (opcional)
               </label>
               <div className="relative">
                 <input
